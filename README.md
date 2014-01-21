@@ -15,10 +15,11 @@ pipicms皮皮影视系统火车头发布模块及免登陆接口
 
 1. 应修改接口文件 /admin/pipicms_locoy.php 中的验证密码 123456 为你所设。
 
-//检验用户登录状态
-if(!isset($_REQUEST['pwd']) || trim($_REQUEST['pwd']) != '123456'){
-	die('deny!');
-}
+	//检验用户登录状态
+	if(!isset($_REQUEST['pwd']) || trim($_REQUEST['pwd']) != '123456'){
+		die('deny!');
+	}
+	
 2. 应修改发布模块地址的密码验证参数 pwd=123456，为接口中设置的验证密码。
 
 3. 影片播放地址格式与数据库中保存相同，格式参考：
@@ -48,12 +49,6 @@ if(!isset($_REQUEST['pwd']) || trim($_REQUEST['pwd']) != '123456'){
 	v_tags= 标签
 	v_topic= 所属专题
 	v_type=[分类ID]
-
-pipicms 火车头发布模块及免登陆接口下载
-----------------------------
-git：https://github.com/renxia/pipicms_locoy_interface
-
-git 下载：https://github.com/renxia/pipicms_locoy_interface/archive/master.zip
 
 相关支持
 ----------------------------
