@@ -18,7 +18,7 @@ $Pirurl=getreferer();
 if(empty($Pirurl)) $Pirurl=$EkNowurl;
 
 //检验用户登录状态
-if(!isset($_REQUEST['pwd']) && trim($_REQUEST['pwd']) != '123456'){
+if(!isset($_REQUEST['pwd']) || trim($_REQUEST['pwd']) != '123456'){
 	die('deny!');
 }
 
