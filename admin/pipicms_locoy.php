@@ -35,7 +35,7 @@ if(isset($_REQUEST["list"])){
  */
 $v_data = array();
 
-//影片名称
+//影片名称\标题
 if (isset($_REQUEST['v_name']) && trim($_REQUEST['v_name']) != '') {
 	$v_data['v_name'] = $_REQUEST['v_name'];
 }else{
@@ -49,92 +49,62 @@ if (isset($_REQUEST['v_type']) && intval($_REQUEST['v_type']) != 0) {
 }
 //下载地址
 if (isset($_REQUEST['v_downdata']) && trim($_REQUEST['v_downdata']) != '') {
-	$v_data['v_downdata'] = trim($_REQUEST['v_downdata']);
+	$v_data['v_downdata'] = formatDowndata(trim($_REQUEST['v_downdata']));
 }
 //播放地址
 if (isset($_REQUEST['v_playdata']) && trim($_REQUEST['v_playdata']) != '') {
-	$v_data['v_playdata'] = trim($_REQUEST['v_playdata']);
-}else if (!isset($v_data['v_downdata'])) {
-	die('播放地址和下载地址不可同时为空！');
-}
-
-//影片播放地址格式化
-/*
-v_playdata 为非标准格式，则需要格式化
-影片数据标准格式参考如下：
-	qvod$$第01集$qvod://175874380|9DF962244E01AF80A887D9097C7846DCF94954B6|女人帮妞儿第二季01[高清版][www.qpg001.com].mkv|$qvod#第02集$qvod://156234593|A375670BAA225365A9B5AACE3B79CFEBBB2BD270|女人帮妞儿第二季02[高清版][www.qpg001.com].mkv|$qvod$$$百度影音$$第01集$bdhd://175874380|7846FFFD968E330DA2F37DBBFB35A191|女人帮妞儿第二季01[高清版][www.qpg001.com].mkv$bdhd#第02集$bdhd://156234593|E33CB3B5F3B9F75347622EFA989CCC8F|女人帮妞儿第二季02[高清版][www.qpg001.com].mkv$bdhd
-*/
-if (isset($v_data['v_playdata']) && strpos($v_data['v_playdata'], '$$') === false) {
 	//影片来源前缀
 	if (isset($_REQUEST['v_playfrom']) && trim($_REQUEST['v_playfrom']) != '') {
 		$v_playfrom = trim($_REQUEST['v_playfrom']);
-	}else{
-		$v_playfrom = getFromByPlaydata($v_data['v_playdata']);
 	}
 
-	//格式化方法，如果 playdata 只是一行一个地址，如
-	//bdhd://156234593|E33CB3B5F3B9F75347622EFA989CCC8F|女人帮妞儿第二季02[高清版].mkv
-	if (strpos($v_data['v_playdata'], '$') === false) {
-		$v_playfrom_id = getReferedId($v_playfrom);	//来源简写id
-
-		$_playdata_array = array_unique(explode("\n", str_replace("\r\n", "\n", $v_data['v_playdata'])));
-
-		foreach ($_playdata_array as $key => $value) {
-			if (empty($value)) {
-				continue;
-			}
-			$_playdata_array[$key] = '第' . ($key+1) . '集$'. $value . '$' . $v_playfrom_id;
-		}		
-		
-		$v_data['v_playdata'] = rtrim(implode('#', $_playdata_array), '#');
-		
-		unset($_playdata_array);
-	}
-	//加上来源标识
-	$v_data['v_playdata'] = $v_playfrom . "$$" . $v_data['v_playdata'];//影片数据地址
+	$v_data['v_playdata'] = formatPlaydata(trim($_REQUEST['v_playdata']), $v_playfrom);
+}else if (!isset($v_data['v_downdata'])) {
+	die('播放地址和下载地址不可同时为空！');
 }
-
+//图片地址\缩略图
 if (isset($_REQUEST['v_pic']) && trim($_REQUEST['v_pic']) != '') {
-	$v_data['v_pic'] =  $_REQUEST['v_pic'];//影片图片地址
+	$v_data['v_pic'] =  $_REQUEST['v_pic'];
 }
-
+//影片状态\连载
 if (isset($_REQUEST['v_state']) && trim($_REQUEST['v_state']) != '') {
-$v_data['v_state'] = $_REQUEST['v_state'];//影片连载状态
+	$v_data['v_state'] = $_REQUEST['v_state'];
 }
-
+//影片\语言
 if (isset($_REQUEST['v_lang']) && trim($_REQUEST['v_lang']) != '') {
-$v_data['v_lang'] = $_REQUEST['v_lang'];//影片语言
+	$v_data['v_lang'] = $_REQUEST['v_lang'];
 }
-
+//影片\地区
 if (isset($_REQUEST['v_publisharea']) && trim($_REQUEST['v_publisharea']) != '') {
-	$v_data['v_publisharea'] = $_REQUEST['v_publisharea'];//影片地区
+	$v_data['v_publisharea'] = $_REQUEST['v_publisharea'];
 }
-
+//影片年份\上映日期
 if (isset($_REQUEST['v_publishyear']) && trim($_REQUEST['v_publishyear']) != '') {
-	$v_data['v_publishyear'] = $_REQUEST['v_publishyear'];//影片年份
+	$v_data['v_publishyear'] = $_REQUEST['v_publishyear'];
 }
-
+//备注
 if (isset($_REQUEST['v_note']) && trim($_REQUEST['v_note']) != '') {
-	$v_data['v_note'] = $_REQUEST['v_note'];//影片备注
+	$v_data['v_note'] = $_REQUEST['v_note'];
 }
-
+//主演
 if (isset($_REQUEST['v_actor']) && trim($_REQUEST['v_actor']) != '') {
-	$v_data['v_actor'] = $_REQUEST['v_actor'];//主演
+	$v_data['v_actor'] = $_REQUEST['v_actor'];
 }
-
+//导演
 if (isset($_REQUEST['v_director']) && trim($_REQUEST['v_director']) != '') {
-	$v_data['v_director'] = $_REQUEST['v_director'];//导演
+	$v_data['v_director'] = $_REQUEST['v_director'];
 }
-
+//简介
 if (isset($_REQUEST['v_content']) && trim($_REQUEST['v_content']) != '') {
-	$v_data['v_des'] = $_REQUEST['v_content'];//影片简介
+	$v_data['v_des'] = $_REQUEST['v_content'];
 }
-
+//标签\关键词
 if (isset($_REQUEST['v_tags']) && trim($_REQUEST['v_tags']) != '') {
-	$v_data['v_tags'] = $_REQUEST['v_tags'];	//标签
+	$v_data['v_tags'] = $_REQUEST['v_tags'];
 }
+//所属专题
 if (isset($_REQUEST['v_tags']) && intval($_REQUEST['v_topic']) !== 0) {
-	$v_data['v_topic'] = intval($_REQUEST['v_topic']);	//所属专题
+	$v_data['v_topic'] = intval($_REQUEST['v_topic']);
 }
 
 $v_data['v_enname'] = Pinyin($v_data['v_name']);
@@ -465,8 +435,8 @@ function getRealSize($size)
 
 /**
  * 由playdata判断播放来源
- * @param  [type] $str [description]
- * @return [type]      [description]
+ * @param  [string] $str [description]
+ * @return [string]      [description]
  */
 function getFromByPlaydata($str)
 {
@@ -492,7 +462,7 @@ function getFromByPlaydata($str)
 	if (m_ereg("real",$str)) return "real";
 	if (m_ereg("media",$str)) return "media";
 	if (m_ereg("pps.tv",$str)) return "ppstream";
-	if (m_ereg("gvod",$str)) return "迅播高清";
+	if (m_ereg("gvod://",$str)) return "迅播高清";
 	if (m_ereg("wp2008",$str)) return "远古高清";
 	if (m_ereg("ppvod",$str)) return "ppvod高清";
 	if (m_ereg("pvod",$str)) return "PVOD";
@@ -501,8 +471,169 @@ function getFromByPlaydata($str)
 	if (m_ereg("webplayer9",$str)) return "久久影音";
 	if (m_ereg("jidong",$str)) return "激动";
 	if (m_ereg("flashPvod",$str)) return "闪播Pvod";
+	if (m_ereg("iqiyi.com",$str)) return "奇艺";
 
-	return 'swf';
+	return 'SWF数据';
+}
+/**
+ * 播放地址格式化
+ * 
+ * 支持至少三种格式的 $v_playdata
+ * 1. 标准格式
+ * 2. 一行一个播放地址
+ * 3. 带名称的一行一个播放地址，用 $ 分隔
+ * 4. 多个播放来源的播放地址，用 $$$ 分隔
+ * 。。。
+ * @param  [string] $v_playdata [播放地址]
+ * @param  string $v_playfrom [播放地址来源]
+ * @return [type]             [description]
+ */
+/*
+影片数据标准格式参考如下：
+	qvod$$第01集$qvod://175874380|9DF962244E01AF80A887D9097C7846DCF94954B6|女人帮妞儿第二季01[高清版][www.qpg001.com].mkv|$qvod#第02集$qvod://156234593|A375670BAA225365A9B5AACE3B79CFEBBB2BD270|女人帮妞儿第二季02[高清版][www.qpg001.com].mkv|$qvod$$$百度影音$$第01集$bdhd://175874380|7846FFFD968E330DA2F37DBBFB35A191|女人帮妞儿第二季01[高清版][www.qpg001.com].mkv$bdhd#第02集$bdhd://156234593|E33CB3B5F3B9F75347622EFA989CCC8F|女人帮妞儿第二季02[高清版][www.qpg001.com].mkv$bdhd
+*/
+
+function formatPlaydata($v_playdata, $v_playfrom=''){
+
+	if (empty($v_playdata)) {
+		die('播放地址不能为空！');
+	}
+
+	//认为包含 # 分隔符的地址，为已格式化为标准格式
+	if (strpos($v_playdata, '#') !== false) {
+		return $v_playdata;
+	}
+	
+	//对于每一种播放来源分别处理
+	
+	$_v_playdata_arr = explode('$$$', $v_playdata);//播放地址数组
+	$_v_playfrom_arr = array();	//播放地址来源数组，一一对应播放地址数组
+	if (!empty($v_playfrom)) {
+		$_v_playfrom_arr = explode('$$$', $v_playfrom);
+	}
+	
+	foreach ($_v_playdata_arr as $key => $value) {
+		if (empty($value)) {
+			unset($_v_playdata_arr[$key]);
+			continue;
+		}
+
+		//影片来源前缀
+		if (isset($_v_playfrom_arr[$key]) && trim($_v_playfrom_arr[$key]) != '') {
+			$_v_playfrom_arr[$key] = trim($_v_playfrom_arr[$key]);
+		}else{
+			$_v_playfrom_arr[$key] = getFromByPlaydata($_v_playdata_arr[$key]);
+			$_v_playfrom_arr[$key] = empty($_v_playfrom_arr[$key]) ? 'qvod' : $_v_playfrom_arr[$key];
+		}
+		
+		// 来源简写id
+		$v_playfrom_id = getReferedId($_v_playfrom_arr[$key]);
+
+		//按行分隔，对每一行地址进行格式化
+		
+		$_v_play_arr = array_unique(explode("\n", str_replace("\r\n", "\n", $value)));
+
+		foreach ($_v_play_arr as $k => $v) {
+			if (empty($v)) {
+				unset($_v_play_arr[$k]);
+				continue;
+			}
+
+			$hasdollar = strpos($v, "$");
+			if ($hasdollar !== false) {
+				//存在第一个 $符号，继续寻找第二个 $ 符号
+				$v = str_replace('$ ', '$', $v);
+				$hasdollar = strpos( $v, '$', ($hasdollar+1));
+				if ($hasdollar === false) {
+					//不存在第二个 $ 符号，即地址格式为：
+					//第一集$bdhd://ddddd.mkv
+
+					$_v_play_arr[$k] = $v . '$' . $v_playfrom_id;
+				}
+			}else{
+				//一个 $ 符号都没有，则地址格式为：
+				//bdhd://ddddd.mkv
+				$_v_play_arr[$k] = '第' . ($k+1) . '集$'. $v . '$' . $v_playfrom_id;
+			}
+		}
+
+		$_v_playdata_arr[$key] =$_v_playfrom_arr[$key] .'$$'. rtrim(implode('#', $_v_play_arr), '#');
+	}
+
+	return implode('$$$', $_v_playdata_arr);
 }
 
+/**
+ * 下载地址格式化，参考播放地址格式
+ * @param  [string] $v_downdata [description]
+ * @param  [string] $v_downfrom [description]
+ * @return [string]             [description]
+ */
+function formatDowndata($v_downdata, $v_downfrom=''){
+	if (empty($v_downdata)) {
+		return '';
+	}
+
+	//认为包含 $down 分隔符的地址，为已格式化为标准格式
+	if (strpos($v_downdata, '$down') !== false) {
+		return $v_downdata;
+	}
+	
+	//对于每一种来源分组分别处理
+	
+	$_v_downdata_arr = explode('$$$', $v_downdata);//下载地址分组数组
+	$_v_downfrom_arr = array();	//地址分组来源数组，一一对应地址数组
+	if (!empty($v_downfrom)) {
+		$_v_downfrom_arr = explode('$$$', $v_downfrom);
+	}
+	
+	foreach ($_v_downdata_arr as $key => $value) {
+		if (empty($value)) {
+			unset($_v_downdata_arr[$key]);
+			continue;
+		}
+
+		//影片下载来源分组名前缀
+		if (isset($_v_downfrom_arr[$key]) && trim($_v_downfrom_arr[$key]) != '') {
+			$_v_downfrom_arr[$key] = trim($_v_downfrom_arr[$key]);
+		}else{
+			$_v_downfrom_arr[$key] = '下载地址' . ($key+1);
+		}
+		
+		// 来源简写id
+		$v_downfrom_id = 'down';
+
+		//按行分隔，对每一行地址进行格式化
+		
+		$_v_down_arr = array_unique(explode("\n", str_replace("\r\n", "\n", $value)));
+
+		foreach ($_v_down_arr as $k => $v) {
+			if (empty($v)) {
+				unset($_v_down_arr[$k]);
+				continue;
+			}
+
+			$hasdollar = strpos($v, "$");
+			if ($hasdollar !== false) {
+				//存在第一个 $符号，继续寻找第二个 $ 符号
+				$v = str_replace('$ ', '$', $v);
+				$hasdollar = strpos( $v, '$', ($hasdollar+1));
+				if ($hasdollar === false) {
+					//不存在第二个 $ 符号，即地址格式为：
+					//第一集$bdhd://ddddd.mkv
+
+					$_v_down_arr[$k] = $v . '$' . $v_downfrom_id;
+				}
+			}else{
+				//一个 $ 符号都没有，则地址格式为：
+				//bdhd://ddddd.mkv
+				$_v_down_arr[$k] = '下载' . ($k+1) . '$'. $v . '$' . $v_downfrom_id;
+			}
+		}
+
+		$_v_downdata_arr[$key] =$_v_downfrom_arr[$key] .'$$'. rtrim(implode('#', $_v_down_arr), '#');
+	}
+
+	return implode('$$$', $_v_downdata_arr);
+}
 ?>
