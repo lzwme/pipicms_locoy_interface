@@ -37,7 +37,10 @@ pipicms皮皮影视系统火车头发布模块及免登陆接口
 		bdhd://156234593|E33CB3B5F3B9F75347622EFA989CCC8F|女人帮妞儿第二季02[高清版].mkv
 
 
-4. 影片播放地址支持直接为优酷播放页地址
+4. 影片播放地址支持直接为优酷播放页地址，如：
+	
+		http://v.youku.com/v_show/id_XNjY0MjIyNzc2.html
+		http://v.youku.com/v_show/id_XNjY0MjIzOTA4.html
 
 主要标签参考
 ----------------------------
