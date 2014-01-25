@@ -30,93 +30,96 @@ if(isset($_REQUEST["list"])){
 	die();
 }
 
+$v_data = getDataByRequest();
+echo $col->_into_database($v_data);
+die();
+
 /*
 * 参数获取
  */
-$v_data = array();
+function getDataByRequest(/* $requestData */){
+	$v_data = array();
 
-//影片名称\标题
-if (isset($_REQUEST['v_name']) && trim($_REQUEST['v_name']) != '') {
-	$v_data['v_name'] = $_REQUEST['v_name'];
-}else{
-	die('影片名称不能为空！');
-}
-//影片分类
-if (isset($_REQUEST['v_type']) && intval($_REQUEST['v_type']) != 0) {
-	$v_data['tid'] = intval($_REQUEST['v_type']);
-}else{
-	die('所属分类不能为空！');
-}
-//下载地址
-if (isset($_REQUEST['v_downdata']) && trim($_REQUEST['v_downdata']) != '') {
-	$v_data['v_downdata'] = formatDowndata(trim($_REQUEST['v_downdata']));
-}
-//播放地址
-if (isset($_REQUEST['v_playdata']) && trim($_REQUEST['v_playdata']) != '') {
-	//影片来源前缀
-	if (isset($_REQUEST['v_playfrom']) && trim($_REQUEST['v_playfrom']) != '') {
-		$v_playfrom = trim($_REQUEST['v_playfrom']);
+	//影片名称\标题
+	if (isset($_REQUEST['v_name']) && trim($_REQUEST['v_name']) != '') {
+		$v_data['v_name'] = $_REQUEST['v_name'];
+	}else{
+		die('影片名称不能为空！');
+	}
+	//影片分类
+	if (isset($_REQUEST['v_type']) && intval($_REQUEST['v_type']) != 0) {
+		$v_data['tid'] = intval($_REQUEST['v_type']);
+	}else{
+		die('所属分类不能为空！');
+	}
+	//下载地址
+	if (isset($_REQUEST['v_downdata']) && trim($_REQUEST['v_downdata']) != '') {
+		$v_data['v_downdata'] = formatDowndata(trim($_REQUEST['v_downdata']));
+	}
+	//播放地址
+	if (isset($_REQUEST['v_playdata']) && trim($_REQUEST['v_playdata']) != '') {
+		//影片来源前缀
+		if (isset($_REQUEST['v_playfrom']) && trim($_REQUEST['v_playfrom']) != '') {
+			$v_playfrom = trim($_REQUEST['v_playfrom']);
+		}
+
+		$v_data['v_playdata'] = formatPlaydata(trim($_REQUEST['v_playdata']), $v_playfrom);
+	}else if (!isset($v_data['v_downdata'])) {
+		die('播放地址和下载地址不可同时为空！');
+	}
+	//图片地址\缩略图
+	if (isset($_REQUEST['v_pic']) && trim($_REQUEST['v_pic']) != '') {
+		$v_data['v_pic'] =  $_REQUEST['v_pic'];
+	}
+	//影片状态\连载
+	if (isset($_REQUEST['v_state']) && trim($_REQUEST['v_state']) != '') {
+		$v_data['v_state'] = $_REQUEST['v_state'];
+	}
+	//影片\语言
+	if (isset($_REQUEST['v_lang']) && trim($_REQUEST['v_lang']) != '') {
+		$v_data['v_lang'] = $_REQUEST['v_lang'];
+	}
+	//影片\地区
+	if (isset($_REQUEST['v_publisharea']) && trim($_REQUEST['v_publisharea']) != '') {
+		$v_data['v_publisharea'] = $_REQUEST['v_publisharea'];
+	}
+	//影片年份\上映日期
+	if (isset($_REQUEST['v_publishyear']) && trim($_REQUEST['v_publishyear']) != '') {
+		$v_data['v_publishyear'] = $_REQUEST['v_publishyear'];
+	}
+	//备注
+	if (isset($_REQUEST['v_note']) && trim($_REQUEST['v_note']) != '') {
+		$v_data['v_note'] = $_REQUEST['v_note'];
+	}
+	//主演
+	if (isset($_REQUEST['v_actor']) && trim($_REQUEST['v_actor']) != '') {
+		$v_data['v_actor'] = $_REQUEST['v_actor'];
+	}
+	//导演
+	if (isset($_REQUEST['v_director']) && trim($_REQUEST['v_director']) != '') {
+		$v_data['v_director'] = $_REQUEST['v_director'];
+	}
+	//简介
+	if (isset($_REQUEST['v_content']) && trim($_REQUEST['v_content']) != '') {
+		$v_data['v_des'] = $_REQUEST['v_content'];
+	}
+	//标签\关键词
+	if (isset($_REQUEST['v_tags']) && trim($_REQUEST['v_tags']) != '') {
+		$v_data['v_tags'] = $_REQUEST['v_tags'];
+	}
+	//所属专题
+	if (isset($_REQUEST['v_tags']) && intval($_REQUEST['v_topic']) !== 0) {
+		$v_data['v_topic'] = intval($_REQUEST['v_topic']);
 	}
 
-	$v_data['v_playdata'] = formatPlaydata(trim($_REQUEST['v_playdata']), $v_playfrom);
-}else if (!isset($v_data['v_downdata'])) {
-	die('播放地址和下载地址不可同时为空！');
-}
-//图片地址\缩略图
-if (isset($_REQUEST['v_pic']) && trim($_REQUEST['v_pic']) != '') {
-	$v_data['v_pic'] =  $_REQUEST['v_pic'];
-}
-//影片状态\连载
-if (isset($_REQUEST['v_state']) && trim($_REQUEST['v_state']) != '') {
-	$v_data['v_state'] = $_REQUEST['v_state'];
-}
-//影片\语言
-if (isset($_REQUEST['v_lang']) && trim($_REQUEST['v_lang']) != '') {
-	$v_data['v_lang'] = $_REQUEST['v_lang'];
-}
-//影片\地区
-if (isset($_REQUEST['v_publisharea']) && trim($_REQUEST['v_publisharea']) != '') {
-	$v_data['v_publisharea'] = $_REQUEST['v_publisharea'];
-}
-//影片年份\上映日期
-if (isset($_REQUEST['v_publishyear']) && trim($_REQUEST['v_publishyear']) != '') {
-	$v_data['v_publishyear'] = $_REQUEST['v_publishyear'];
-}
-//备注
-if (isset($_REQUEST['v_note']) && trim($_REQUEST['v_note']) != '') {
-	$v_data['v_note'] = $_REQUEST['v_note'];
-}
-//主演
-if (isset($_REQUEST['v_actor']) && trim($_REQUEST['v_actor']) != '') {
-	$v_data['v_actor'] = $_REQUEST['v_actor'];
-}
-//导演
-if (isset($_REQUEST['v_director']) && trim($_REQUEST['v_director']) != '') {
-	$v_data['v_director'] = $_REQUEST['v_director'];
-}
-//简介
-if (isset($_REQUEST['v_content']) && trim($_REQUEST['v_content']) != '') {
-	$v_data['v_des'] = $_REQUEST['v_content'];
-}
-//标签\关键词
-if (isset($_REQUEST['v_tags']) && trim($_REQUEST['v_tags']) != '') {
-	$v_data['v_tags'] = $_REQUEST['v_tags'];
-}
-//所属专题
-if (isset($_REQUEST['v_tags']) && intval($_REQUEST['v_topic']) !== 0) {
-	$v_data['v_topic'] = intval($_REQUEST['v_topic']);
-}
+	$v_data['v_enname'] = Pinyin($v_data['v_name']);
+	$v_data['v_letter'] = strtoupper(substr($v_data['v_enname'],0,1));
 
-$v_data['v_enname'] = Pinyin($v_data['v_name']);
-$v_data['v_letter'] = strtoupper(substr($v_data['v_enname'],0,1));
-
-$v_data['v_hit'] = rand(50,5000);	//点击数
-$v_data['v_commend'] = rand(0,5);//推荐级别
-$v_data['v_ismake'] = 0;//是否已生成
-
-//var_dump($v_data);die();
-echo $col->_into_database($v_data);
-die();
+	$v_data['v_hit'] = rand(50,5000);	//点击数
+	$v_data['v_commend'] = rand(0,5);//推荐级别
+	$v_data['v_ismake'] = 0;//是否已生成
+	return $v_data;
+}
 
 function makeTopicSelect($selectName,$strSelect,$topicId)
 {
@@ -440,6 +443,7 @@ function getRealSize($size)
  */
 function getFromByPlaydata($str)
 {
+	if (m_ereg(".swf",$str)) return "SWF数据";
 	if (m_ereg("qvod",$str)) return "qvod";
 	if (m_ereg("bdhd",$str)) return "百度影音";
 	if (m_ereg("tudou.com",$str)) return "土豆高清";
@@ -458,7 +462,6 @@ function getFromByPlaydata($str)
 	if (m_ereg("17173.com",$str)) return "17173";
 	if (m_ereg("ku6.com",$str)) return "ku6视频";
 	if (m_ereg("flv",$str)) return "FLV";
-	if (m_ereg("swf",$str)) return "SWF数据";
 	if (m_ereg("real",$str)) return "real";
 	if (m_ereg("media",$str)) return "media";
 	if (m_ereg("pps.tv",$str)) return "ppstream";
@@ -492,7 +495,6 @@ function getFromByPlaydata($str)
 影片数据标准格式参考如下：
 	qvod$$第01集$qvod://175874380|9DF962244E01AF80A887D9097C7846DCF94954B6|女人帮妞儿第二季01[高清版][www.qpg001.com].mkv|$qvod#第02集$qvod://156234593|A375670BAA225365A9B5AACE3B79CFEBBB2BD270|女人帮妞儿第二季02[高清版][www.qpg001.com].mkv|$qvod$$$百度影音$$第01集$bdhd://175874380|7846FFFD968E330DA2F37DBBFB35A191|女人帮妞儿第二季01[高清版][www.qpg001.com].mkv$bdhd#第02集$bdhd://156234593|E33CB3B5F3B9F75347622EFA989CCC8F|女人帮妞儿第二季02[高清版][www.qpg001.com].mkv$bdhd
 */
-
 function formatPlaydata($v_playdata, $v_playfrom=''){
 
 	if (empty($v_playdata)) {
@@ -517,6 +519,9 @@ function formatPlaydata($v_playdata, $v_playfrom=''){
 			unset($_v_playdata_arr[$key]);
 			continue;
 		}
+
+		//优酷视频地址的处理
+		$value = formatYoukuData($value);
 
 		//影片来源前缀
 		if (isset($_v_playfrom_arr[$key]) && trim($_v_playfrom_arr[$key]) != '') {
@@ -635,5 +640,29 @@ function formatDowndata($v_downdata, $v_downfrom=''){
 	}
 
 	return implode('$$$', $_v_downdata_arr);
+}
+
+/**
+ * 对优酷地址的处理
+ * @param string $playdata [一行一个，为优酷的播放页地址]
+ * @return [string] 处理为优酷的 swf 播放地址
+ */
+function formatYoukuData($playdata=''){
+	if (empty($playdata) || strpos($playdata, 'v.youku.com/v_show')==false) {
+		return $playdata;
+	}
+
+	$playdata_arr = explode('\n', str_replace('\r\n', '\n', $playdata));
+	foreach ($playdata_arr as $key => $value) {
+		if (empty($value)) {
+			unset($playdata_arr[$key]);
+		}
+		$_preg_vid = preg_match('/http\:\/\/v\.youku\.com\/v_show/id_(.*)\.html/', $value, $matches);
+		if ($_preg_vid) {
+			$playdata_arr[$key] = 'player.youku.com/player.php/sid/' . $matches[1] . '/v.swf';
+		}
+	}
+	
+	return $playdata = implode('\r\n', $playdata_arr);
 }
 ?>
